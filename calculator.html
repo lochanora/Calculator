@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+     content="width=device-width, initial-scale=1.0">
+    <title>Very Simple Calculator</title>
+<style>
+
+    body {
+    padding: 25px;
+    background-color: white;
+    color: black;
+    font-size: 25px;
+    }
+
+    button {
+    font-size: 24px;
+    width: 50px;
+    height: 50px;
+    margin: 5px;
+    border: none;
+    background-color: #eee;
+    cursor: pointer;
+    }
+
+    button.data-operator1 {
+    cursor: pointer;
+    font-size: 35pt;
+    width: 100px; 
+    height: 90px;
+    border-radius: 20px;
+
+    }
+
+    button.data-operator {
+    background-color: #ffa500;
+    color: #fff;
+    width: 100px; 
+    height: 90px;
+    border-radius: 20px;
+    font-size: 35pt;
+    }
+
+
+    .data-number {
+    width: 100px; 
+    height: 80px;
+    background-color: rgb(182, 182, 182);
+    color: white;
+    border-radius: 20px;
+    font-size: 35pt;
+    }
+
+
+    .keypad {
+    width: 400px;
+    margin: auto;
+    padding: 20px;
+    display: grid;
+    justify-content: center;
+    align-items: center;
+    height: 150px;
+    grid-template: repeat(4, 1fr) / repeat(4, 1fr);
+    }
+
+    .display {
+    grid-column: 1/-1;
+    background-color: rgb(182, 182, 182);
+    width: 90%;
+    height: 90px;
+    padding: 20px;
+    text-align: right;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-direction: column;
+    color: #fff;
+    font-size: 3rem;
+    border-radius: 20px;
+    }
+
+    .dark-mode {
+    background-color: black;
+    color: white;
+    overflow: hidden;
+    
+    }
+
+    .mode {
+    font-size: 20px;
+    border-radius: 20px;
+    width: 100px; 
+    height: 80px;
+    }
+
+    .data-operator:hover {
+        background-color: rgb(182, 182, 182);
+    }
+    .data-number:hover {
+        background-color: #ffa500;
+
+    }
+
+</style>
+</head>
+<body>
+    <center><h2>Calculator</h2></center>
+    
+    <div class="Calculator">
+        <div class="keypad">
+            <div class="display" id="dis">0</div>
+            <button class="data-operator" data-type="add">+</button>
+            <button class="data-operator" data-type="subtract">-</button>
+            <button class="data-operator multiplication" data-type="multiply">*</button>
+            <button class="data-operator" data-type="divide">/</button>
+            <button class="data-number">7</button>
+            <button class="data-number">8</button>
+            <button class="data-number">9</button>
+            <button class="data-operator1 equals" data-type="calculateExpression">=</button>
+            <button class="data-number">4</button>
+            <button class="data-number">5</button>
+            <button class="data-number">6</button>
+            <button class="data-operator1" data-type="clearScreen()">Clr</button>
+            <button class="data-number">1</button>
+            <button class="data-number">2</button>
+            <button class="data-number">3</button>
+            <button class="data-number">0</button>
+            <button class="mode" onclick="Mode()">Dark Mode</button>
+        </div>
+    </div>
+    
+
+    <script>
+        var array = []; //declares an empty array to store the numbers and operators entered by the user.
+        var input = 0;//declares a variable to store the current number entered by the user.
+        var el = document.getElementById("dis");//gets the HTML element with the ID "dis", which represents the display of the calculator.
+        let aux = true //declares a boolean variable to help with the input of numbers and operators.
+
+        // Numbers
+        const $numbers = document.getElementsByClassName('data-number') //gets all the HTML elements with the class "data-number", which represent the number buttons on the calculator.
+        Array.from($numbers).forEach(button => {
+            button.addEventListener('click', number)
+        }) //attaches a "click" event listener to each number button and calls the number function when clicked.
+        
+        // +, -, * ,/
+        const $operators = document.getElementsByClassName('data-operator') //gets all the HTML elements with the class "data-operator", which represent the operator buttons on the calculator.
+        Array.from($operators).forEach(button => {
+            button.addEventListener('click', operator)
+        }) // attaches a "click" event listener to each operator button and calls the operator function when clicked.
+
+        const $clear = document.getElementsByClassName('data-operator1')[1]//gets the second HTML element with the class "data-operator1", which represents the "Clear" button on the calculator.
+        $clear.addEventListener('click', clearScreen) // attaches a "click" event listener to the "Clear" button and calls the clearScreen function when clicked.
+
+        const $equals = document.getElementsByClassName('data-operator1')[0]//gets the first HTML element with the class "data-operator1", which represents the "Equals" button on the calculator.
+        $equals.addEventListener('click', calculateExpression)//attaches a "click" event listener to the "Equals" button and calls the calculateExpression function when clicked.
+
+        function number(e) {
+            const value = e.target.innerHTML
+
+            // CHANGE: IF THERE IS NOTHING IN THE ARRAY (AFTER CALCULATION) CLEAR THE DISPLAY BEFORE ADDING THE NEW NUMBER
+            if (array.length>0) {
+            el.innerHTML = ''
+        }
+
+            // If the display shows 0, replace it with an empty string
+            if (el.innerHTML == 0 ) {
+            
+            el.innerHTML = "";
+        }
+            /// If there was a previous calculation, clear the input and the array before adding the new number
+            if (!aux) {
+                input = 0
+                aux = true
+                el.innerHTML = ""
+                array.length = 0
+            }
+
+        // update input
+        input = input + value;
+        
+        // append value, display the new number on the screen
+        el.innerHTML += value;
+        
+        
+        } 
+
+        function operator(e) {
+            aux = true
+            const value = e.target.innerHTML
+            // if array is empty
+			if (array.length==0) { 
+                
+				input = parseFloat(input);
+                
+				array.push(input);
+                
+				array.push(value);
+                // CHANGE: ELIMINATE  el.innerHTML += value (this adds the operator to the display but doesn't change logic)
+				
+				input = 0; // reset input
+			}
+            else if (array.length>0) {
+				input = parseFloat(input);
+				array.push(input);
+
+                var output = 0;
+                switch (array[1]) {
+            case "+":
+                output = array[0] + array[2];
+                break;
+            case "-":
+                output = array[0] - array[2];
+                break;
+            case "*":
+                output = array[0] * array[2];
+                break;
+            case "/":
+                output = array[0] / array[2];
+                break;
+        }
+            // CHANGE: In the next line remove the + value to not display the operator
+            el.innerHTML = output;
+            input = output; //updates the input variable
+            array.length = 0; 
+            console.log(array)
+            array.push(input);// adds the input value (which is the result of the previous calculation) to the array
+            array.push(value); 
+            console.log(array)
+            input = 0; //resets the input variable to zero, allowing the user to enter a new number for the next calculation.
+                return value
+            }
+        }
+        
+        
+
+
+
+
+        function clearScreen() {
+            array.length = 0; 
+            input = 0; 
+            el.innerHTML = "0"; 
+            
+        }
+
+        function calculateExpression() {
+            // check if input is not zero, convert to a float and add to the array
+            if (input !== 0) {
+            input = parseFloat(input); 
+            array.push(input);
+            }
+            var output = 0;
+          
+            switch (array[1]) {
+            case "+":
+            output = array[0] + array[2];
+            break;
+            case "-":
+            output = array[0] - array[2];
+            break;
+            case "*":
+            output = array[0] * array[2];
+            break;
+            case "/":
+            output = array[0] / array[2];
+            break;
+            }
+
+            el.innerHTML = output;
+            input = output;
+            array.length = 0;
+            aux = false
+            return aux
+        }
+
+
+
+
+        function Mode() {
+            var element = document.body;
+            const calc = document.getElementsByClassName('keypad')[0]
+            element.classList.toggle("dark-mode")
+            calc.classList.toggle("calc")
+            const button = document.getElementsByClassName('mode')[0]
+            let string = button.textContent
+            if (string === 'Dark Mode') {
+                button.textContent = 'Light Mode'
+            } else {
+                button.textContent = 'Dark Mode'
+            }
+        }
+
+
+    </script>
+
+</body>
+
+</html>
